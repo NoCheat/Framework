@@ -1,4 +1,6 @@
 Framework
 =========
 
-We will discuss all of this on the forums.
+Discussion stage.
+
+(Please keep out .gitignore, .project, .classpath, .settings, etc. for the moment!)

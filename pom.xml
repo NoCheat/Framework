@@ -14,7 +14,7 @@
   </properties>
   
   <build>
-      <sourceDirectory>${basedir}/src</sourceDirectory>
+      <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
     
@@ -48,13 +48,6 @@
     
   </build>  
   
-  <dependencies>
-  	<dependency>
-  		<groupId>org.bukkit</groupId>
-  		<artifactId>bukkit</artifactId>
-  		<version>1.6.2-R0.1-SNAPSHOT</version>
-  	</dependency>
-   </dependencies>
   
   <repositories>
      <repository>
@@ -63,4 +56,11 @@
     </repository>
   </repositories>
 
+  <dependencies>
+  	<dependency>
+  		<groupId>org.bukkit</groupId>
+  		<artifactId>Bukkit</artifactId>
+  		<version>1.6.2-R1.0</version>
+  	</dependency>
+  </dependencies>
 </project>
