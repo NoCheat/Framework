@@ -14,7 +14,7 @@ public interface IDataBroker {
 	public IPlayerData getPlayerData(String id);
 	
 	/**
-	 * 
+	 * Alright ;:p
 	 */
 	public <D> void registerDataFactory(IDataFactory<D> factory);
 	

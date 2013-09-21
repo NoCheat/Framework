@@ -6,5 +6,14 @@ package at.nocheat.framework;
  *
  */
 public interface NCRegistry {
-
+	
+	/**
+	 * General services.
+	 * @param serviceClass
+	 * @return
+	 */
+	public <T> T getService(Class<T> serviceClass);
+	
+	
+	
 }
