@@ -15,5 +15,7 @@ public interface NCRegistry {
 	public <T> T getService(Class<T> serviceClass);
 	
 	
+	public void register(IRegistrationContext context);
+	
 	
 }
