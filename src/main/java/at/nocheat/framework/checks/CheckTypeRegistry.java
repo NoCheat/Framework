@@ -37,9 +37,9 @@ public class CheckTypeRegistry {
 		name = name.trim(); // Check for empty !?
 		CheckType newType = new CheckType(name, parent); // New type for name comparison (increases hashs though).
 		String key = newType.getFullName().toLowerCase();
-		CheckType presentType = checkTypes.get(key);
+		CheckType presentType = checkTypesLowerCase.get(key);
 		if (presentType == null) {
-			if (parent != null && parent != checkTypes.get(parent.getFullName().toLowerCase())) {
+			if (parent != null && parent != checkTypesLowerCase.get(parent.getFullName().toLowerCase())) {
 				throw new NotRegisteredException("Parent CheckType not registered: " + parent.getFullName());
 			}
 			checkTypesLowerCase.put(key, newType);
