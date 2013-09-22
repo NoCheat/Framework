@@ -20,7 +20,7 @@ public class BukkitEventRegistry extends MiniListenerRegistry<Event, EventPriori
 		Bukkit.getPluginManager().registerEvents(new Listener(){
 			@EventHandler(ignoreCancelled = false, priority = basePriority)
 			public void onEvent(E event) {
-				node.onEvent(event, !(event instanceof Cancellable) || (((Cancellable) event).isCancelled()));
+				node.onEvent(event, event instanceof Cancellable && ((Cancellable) event).isCancelled());
 			}
 		}, Bukkit.getPluginManager().getPlugin("NoCheat"));
 	}

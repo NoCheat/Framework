@@ -22,12 +22,12 @@ public class MiniListenerNode<E>{
 		// Sort list (maybe use an array though generics get a little bit lost , so uncertain how much gain)
 	}
 	
-	public void onEvent(final E event, final boolean skipIgnoreCancelled) {
+	public void onEvent(final E event, final boolean isCancelled) {
 		// Go through mini listeners....
 		// Note that cancelled events get in here too (!).
 		for (int i = 0; i < listeners.size(); i++) {
 			final ListenerEntry<E> entry = listeners.get(i);
-			if (!skipIgnoreCancelled|| !entry.ignoreCancelled) {
+			if (!isCancelled || !entry.ignoreCancelled) {
 				// TODO: try - catch (+log)!
 				entry.listener.onEvent(event);
 			}
