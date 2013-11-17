@@ -32,9 +32,9 @@ public class BukkitEventRegistry extends MiniListenerRegistry<Event, EventPriori
 	}
 	
 	public BukkitEventRegistry() {
-		nodeFactory = new NodeFactory<EventPriority>() {
+		nodeFactory = new NodeFactory<Event, EventPriority>() {
 			@Override
-			public <E> MiniListenerNode<E, EventPriority> newNode(Class<E> eventClass, EventPriority basePriority) {
+			public <E extends Event> MiniListenerNode<E, EventPriority> newNode(Class<E> eventClass, EventPriority basePriority) {
 				if (Cancellable.class.isAssignableFrom(eventClass)) {
 					// TODO: Check if order is right (eventClass extends Cancellable).
 					// TODO: Future java (see above) ?

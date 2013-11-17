@@ -25,8 +25,8 @@ public abstract class MiniListenerRegistry <EB, P> {
 	 *  Add a concept similar to the Bukkit Listener interface?
 	 */
 	
-	protected static interface NodeFactory<P> {
-		public <E>  MiniListenerNode<E, P> newNode(Class<E> eventClass, P basePriority);
+	protected static interface NodeFactory<EB, P> {
+		public <E extends EB>  MiniListenerNode<E, P> newNode(Class<E> eventClass, P basePriority);
 	}
 	
 	///////////////
@@ -41,9 +41,9 @@ public abstract class MiniListenerRegistry <EB, P> {
 	/**
 	 * Override for efficient stuff.
 	 */
-	protected NodeFactory<P> nodeFactory = new NodeFactory<P>() {
+	protected NodeFactory<EB, P> nodeFactory = new NodeFactory<EB, P>() {
 		@Override
-		public <E> MiniListenerNode<E, P> newNode(Class<E> eventClass, P basePriority) {
+		public <E extends EB> MiniListenerNode<E, P> newNode(Class<E> eventClass, P basePriority) {
 			return new MiniListenerNode<E, P>(basePriority);
 		}
 	};
