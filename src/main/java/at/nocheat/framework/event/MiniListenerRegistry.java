@@ -3,9 +3,10 @@ package at.nocheat.framework.event;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * 
- * One registry for mini-listener instances.
+ * One registry for MiniListener instances.
  * (Not sure this is the final name.)
  * 
  * @param <EB> Event base type, e.g. Event (Bukkit).
@@ -14,49 +15,74 @@ import java.util.Map;
  * @author mc_dev
  *
  */
-public abstract class MiniListenerRegistry <EB, P>{
+public abstract class MiniListenerRegistry <EB, P> {
 	
-	// TODO: Adjust signatures, Add concept for ordering (extra annotation class or given comparator !?, might need generic node class specified here).
+	/*
+	 *  TODO:
+	 *  Adjust signatures, 
+	 *  Add concept for ordering (extra annotation class or given comparator !?, 
+	 *  might need generic node class specified here).
+	 *  Add a concept similar to the Bukkit Listener interface?
+	 */
 	
 	protected static interface NodeFactory<P> {
-		public <E>  MiniListenerNode<E> newNode(Class<E> eventClass, P basePriority);
+		public <E>  MiniListenerNode<E, P> newNode(Class<E> eventClass, P basePriority);
 	}
 	
 	///////////////
 	// Instance.
 	///////////////
 	
-	protected final Map<Class<?>, MiniListenerNode<?>> nodes = new HashMap<Class<?>, MiniListenerNode<?>>();
+	/**
+	 * Map event class -> base priority -> node. Note that this does no merging based on super-classes like the Bukkit implementation of the Listener registry would do.
+	 */
+	protected final Map<Class<? extends EB>, Map<P, MiniListenerNode<?, P>>> classMap = new HashMap<Class<? extends EB>, Map<P, MiniListenerNode<?, P>>>();
 	
 	/**
 	 * Override for efficient stuff.
 	 */
 	protected NodeFactory<P> nodeFactory = new NodeFactory<P>() {
 		@Override
-		public <E> MiniListenerNode<E> newNode(Class<E> eventClass, P basePriority) {
-			return new MiniListenerNode<E>();
+		public <E> MiniListenerNode<E, P> newNode(Class<E> eventClass, P basePriority) {
+			return new MiniListenerNode<E, P>(basePriority);
 		}
 	};
 	
 	
 	/**
-	 * <br>Note: Policy is to direct map the event.
+	 * Full signature registration method, given parameters override any annotations and interfaces.
+	 * <br>This will update the internal classMap to contain a MiniListenerNode for the given eventClass and basePriority. The miniListener will be added to the node.
 	 * @param eventClass
 	 * @param listener
 	 * @param basePriority Priority for the underlying event system.
+	 * @param ignoreCancelled
 	 */
-	public <E extends EB> void register(Class<E> eventClass, MiniListener<E> listener, P basePriority) {
-		// Check if exists.
-		// Exists -> just add the listener.
-		// Not Exists -> create node from factory, adds listener, register with registerNode with the underlying event system with given base priority.
+	public <E extends EB> void register(Class<E> eventClass, MiniListener<E> listener, P basePriority, boolean ignoreCancelled) {
+		// TODO: More simplified signatures, adding annotations and extra objects (order).
+		Map<P, MiniListenerNode<?, P>> prioMap = classMap.get(eventClass);
+		if (prioMap == null) {
+			prioMap = new HashMap<P, MiniListenerNode<?,P>>();
+			classMap.put(eventClass, prioMap);
+		}
+		// TODO: Concept for when to cast.
+		@SuppressWarnings("unchecked")
+		MiniListenerNode<E, P> node = (MiniListenerNode<E, P>) prioMap.get(basePriority);
+		if (node == null) {
+			node = nodeFactory.newNode(eventClass, basePriority);
+			prioMap.put(basePriority, node);
+		}
+		registerNode(eventClass, node, basePriority);
+		node.addMiniListener(listener, ignoreCancelled);
 	}
 	
 	/**
-	 * Override this.
+	 * Register a MiniListenerNode instance with the underlying event-system (unique nodes are ensured in register(...)).
+	 * <br>Note that the node is put to the internals map after this has been called, to be able to recover from errors.
 	 * @param eventClass
 	 * @param node
 	 * @param basePriority
 	 */
-	protected abstract <E extends EB> void registerNode(Class<E> eventClass, MiniListenerNode<E> node, P basePriority);
+	protected abstract <E extends EB> void registerNode(Class<E> eventClass, MiniListenerNode<E, P> node, P basePriority);
+	
 }
 
