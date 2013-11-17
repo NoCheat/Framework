@@ -11,12 +11,14 @@ package at.nocheat.framework;
  * Simple abstract classes for convenient registration of checks and other can
  * be provided.
  * 
- * TODO: Might already contain the classes for use with PlayerData (config / data / ...), though unregistration just should do something like "decrease refcount".
+ * TODO: Might already contain the classes for use with PlayerData (config /
+ * data / ...), though unregistration just should do something like
+ * "decrease refcount".
  * TODO: Might change to an abstract class.
  * 
  * @author mc_dev
  * 
  */
 public interface IRegistrationContext {
-
+    
 }

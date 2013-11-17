@@ -6,8 +6,8 @@ package at.nocheat.framework.bukkit;
  * Note: Bukkit parts should have an own project / module.
  * 
  * @author mc_dev
- *
+ * 
  */
 public class NCStaticBukkit {
-
+    
 }
