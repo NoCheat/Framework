@@ -67,11 +67,16 @@ public abstract class MiniListenerRegistry <EB, P> {
 		// TODO: Concept for when to cast.
 		@SuppressWarnings("unchecked")
 		MiniListenerNode<E, P> node = (MiniListenerNode<E, P>) prioMap.get(basePriority);
+		boolean addNode = false;
 		if (node == null) {
 			node = nodeFactory.newNode(eventClass, basePriority);
+			addNode = true;
+			// TODO: Consider try-catch.
+			registerNode(eventClass, node, basePriority);
+		}
+		if (addNode) {
 			prioMap.put(basePriority, node);
 		}
-		registerNode(eventClass, node, basePriority);
 		node.addMiniListener(listener, ignoreCancelled);
 	}
 	
