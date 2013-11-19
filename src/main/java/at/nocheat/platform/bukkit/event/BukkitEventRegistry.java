@@ -1,16 +1,22 @@
 package at.nocheat.platform.bukkit.event;
 
+import java.lang.reflect.Method;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.plugin.Plugin;
 
+import at.nocheat.framework.event.MiniListener;
 import at.nocheat.framework.event.MiniListenerNode;
-import at.nocheat.framework.event.MiniListenerRegistry;
+import at.nocheat.framework.event.MultiListenerRegistry;
+import at.nocheat.platform.bukkit.NCStaticBukkit;
 
-public class BukkitEventRegistry extends MiniListenerRegistry<Event, EventPriority> {
+public class BukkitEventRegistry extends MultiListenerRegistry<Event, EventPriority> {
     
     /**
      * Node for events that implement the Cancellable interface (Bukkit).
@@ -45,23 +51,69 @@ public class BukkitEventRegistry extends MiniListenerRegistry<Event, EventPriori
                 }
             }
         };
+        // Auto register for plugin disable.
+        // TODO: Add order to come pretty late.
+        // TODO: Ensure the ignoreCancelled setting is correct (do listeners really not unregister if the event is cancelled).
+        register(new MiniListener<PluginDisableEvent>() {
+            @Override
+            public void onEvent(PluginDisableEvent event) {
+                unregisterAttached(event.getPlugin());
+            }
+        }, EventPriority.MONITOR, true);
     }
-    
-    // TODO: Sanity Checks for Event class in use.
-    
-    // TODO: Overrider other register method (which listener to use, inaugurate listeners / double register).
-    
-    // TODO: Allow Listener (Bukkit) registration, auto wrap in mini-listeners.
     
     @Override
     protected <E extends Event> void registerNode(final Class<E> eventClass, final MiniListenerNode<E, EventPriority> node, final EventPriority basePriority) {
-        // TODO: DETAILS.
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler(ignoreCancelled = false, priority = basePriority)
             public void onEvent(E event) {
                 node.onEvent(event);
             }
-        }, Bukkit.getPluginManager().getPlugin("NoCheat"));
+        }, NCStaticBukkit.getPlugin());
+    }
+    
+    /**
+     * Convenience method to have a listener unregister with disabling a plugin.
+     * 
+     * @param listener
+     *            Do not call with a plugin class being the listener, use the
+     *            other register method instead!
+     * @param plugin
+     */
+    public void register(Listener listener, Plugin plugin) {
+        attach(super.register((Object) listener, EventPriority.NORMAL, false), plugin);
+    }
+    
+    public void register(Listener listener) {
+        // Note: default ignoreCancelld and priority should have no effect, as EventHandler sets the defaults anyway.
+        super.register((Object) listener, EventPriority.NORMAL, false);
+    }
+    
+    @Override
+    protected boolean shouldBeEventHandler(Method method) {
+        return method.getAnnotation(EventHandler.class) != null;
+    }
+    
+    @Override
+    protected boolean getIgnoreCancelled(Method method, boolean defaultIgnoreCancelled) {
+        EventHandler info = method.getAnnotation(EventHandler.class);
+        if (info == null) {
+            return defaultIgnoreCancelled;
+        }
+        else {
+            return info.ignoreCancelled();
+        }
+    }
+    
+    @Override
+    protected EventPriority getPriority(Method method, EventPriority defaultPriority) {
+        EventHandler info = method.getAnnotation(EventHandler.class);
+        if (info == null) {
+            return defaultPriority;
+        }
+        else {
+            return info.priority();
+        }
     }
     
 }

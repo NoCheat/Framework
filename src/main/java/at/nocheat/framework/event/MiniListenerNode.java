@@ -1,6 +1,7 @@
 package at.nocheat.framework.event;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MiniListenerNode<E, P> {
@@ -43,6 +44,20 @@ public class MiniListenerNode<E, P> {
         // Add to internals.
         // TODO: Change signature to contain EVERYTHING (order, ...).
         addListenerEntry(new ListenerEntry<E>(listener, ignoreCancelled));
+    }
+    
+    public boolean removeMiniListener(MiniListener<E> listener) {
+        // TODO: Consider switching to MiniListener<?>.
+        boolean removed = false;
+        Iterator<ListenerEntry<E>> it = listeners.iterator();
+        while (it.hasNext()) {
+            ListenerEntry<E> entry = it.next();
+            if (entry.listener.equals(listener)) {
+                it.remove();
+                removed = true;
+            }
+        }
+        return removed;
     }
     
     /**

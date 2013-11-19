@@ -1,5 +1,8 @@
 package at.nocheat.platform.bukkit;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
 /**
  * Maybe: A static access getter for API.
  * 
@@ -9,5 +12,7 @@ package at.nocheat.platform.bukkit;
  * 
  */
 public class NCStaticBukkit {
-    
+    public static Plugin getPlugin() {
+        return Bukkit.getPluginManager().getPlugin("NoCheat");
+    }
 }
