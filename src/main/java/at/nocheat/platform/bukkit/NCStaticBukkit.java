@@ -1,4 +1,4 @@
-package at.nocheat.framework.bukkit;
+package at.nocheat.platform.bukkit;
 
 /**
  * Maybe: A static access getter for API.

@@ -5,8 +5,24 @@ import java.util.Map;
 
 /**
  * 
- * One registry for MiniListener instances.
- * (Not sure this is the final name.)
+ * One registry for MiniListener instances.<br>
+ * Conventions:<br>
+ * <ul>
+ * <li>There should be only one event-registry per event-subsystem, unless a
+ * registry is using another existing registry (...). Replacing
+ * listener-registries might be solved by configuration, later.</li>
+ * </ul>
+ * Missing:<br>
+ * <ul>
+ * <li>Annotations for order and ignoreCancelled.</li>
+ * <li>A class for order.</li>
+ * <li>Use arrays within MiniListenerNode (copyOnWrite).</li>
+ * <li>Allow unregister.</li>
+ * </ul>
+ * Uncertain:<br>
+ * <ul>
+ * <li>Name of this class.</li>
+ * </ul>
  * 
  * @param <EB>
  *            Event base type, e.g. Event (Bukkit).
@@ -19,14 +35,6 @@ import java.util.Map;
  */
 public abstract class MiniListenerRegistry<EB, P> {
     
-    /*
-     *  TODO:
-     *  Adjust signatures, 
-     *  Add concept for ordering (extra annotation class or given comparator !?, 
-     *  might need generic node class specified here).
-     *  Add a concept similar to the Bukkit Listener interface?
-     */
-    
     protected static interface NodeFactory<EB, P> {
         public <E extends EB> MiniListenerNode<E, P> newNode(Class<E> eventClass, P basePriority);
     }
@@ -34,13 +42,6 @@ public abstract class MiniListenerRegistry<EB, P> {
     ///////////////
     // Instance.
     ///////////////
-    
-    /**
-     * Map event class -> base priority -> node. Note that this does no merging
-     * based on super-classes like the Bukkit implementation of the Listener
-     * registry would do.
-     */
-    protected final Map<Class<? extends EB>, Map<P, MiniListenerNode<?, P>>> classMap = new HashMap<Class<? extends EB>, Map<P, MiniListenerNode<?, P>>>();
     
     /**
      * Override for efficient stuff.
@@ -51,6 +52,16 @@ public abstract class MiniListenerRegistry<EB, P> {
             return new MiniListenerNode<E, P>(basePriority);
         }
     };
+    
+    /**
+     * Map event class -> base priority -> node. Note that this does no merging
+     * based on super-classes like the Bukkit implementation of the Listener
+     * registry would do.
+     */
+    protected final Map<Class<? extends EB>, Map<P, MiniListenerNode<?, P>>> classMap = new HashMap<Class<? extends EB>, Map<P, MiniListenerNode<?, P>>>();
+    
+    // TODO: Add storage for multi-listeners to allow unregistering all.
+    //          Question: Store by priority as well !?
     
     /**
      * Full signature registration method, given parameters override any

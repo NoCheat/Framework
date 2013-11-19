@@ -1,4 +1,4 @@
-package at.nocheat.framework.bukkit;
+package at.nocheat.platform.bukkit.event;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
